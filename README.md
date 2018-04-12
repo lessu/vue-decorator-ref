@@ -34,15 +34,9 @@ export default class TabPage extends Vue{
   @Ref()
   tabController : TabController;
 
-  created(){
-    const self = this;
-    
-  }
   mounted(){
-    var self = this;
-    
     //use with self.tabController;
-    self.tabController;
+    this.tabController;
     ...
 
   }
@@ -51,7 +45,7 @@ export default class TabPage extends Vue{
 ```
 
 
-# Useage
+# Usege
 ```typescript
 // case #1
 // when refName is not given,then get one whose name is as same as propertyName
