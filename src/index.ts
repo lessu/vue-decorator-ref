@@ -24,28 +24,34 @@ export function Ref(refName?:string) : PropertyDecorator{
     });
 }
 
-
+function inject(vue:Vue){
+    let refs = (<any>vue).$options.$$__refs;
+    if(refs){
+        let keys = Object.keys(refs);
+        for (let key of keys){
+            let componenet = vue.$refs[ key ];
+            if(componenet == null){
+                componenet = vue.$refs[ decamelize(key,'-') ];
+            }
+            if(componenet){
+                (<any>vue)[refs[key]] = componenet;
+            }else{
+                // console.warn("@Ref not found ref componet '"+key+"'");
+            }
+        }
+    }
+}
 export let Plugin : any =  {
+    
     install : function (Vue:VueConstructor , options:any) : void {
         
         Vue.mixin({
             mounted: function (this:Vue) {
-                let refs = (<any>this).$options.$$__refs;
-                if(refs){
-                    let keys = Object.keys(refs);
-                    for (let key of keys){
-                        let componenet = this.$refs[ key ];
-                        if(componenet == null){
-                            componenet = this.$refs[ decamelize(key,'-') ];
-                        }
-                        if(componenet){
-                            (<any>this)[refs[key]] = componenet;
-                        }else{
-                            console.warn("@Ref not found ref componet '"+key+"'");
-                        }
-                    }
-                }
-            }
+                inject(this);
+            },
+            updated :function (this:Vue) {
+                inject(this);
+            } 
         });
     }
 }

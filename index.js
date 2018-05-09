@@ -28,27 +28,33 @@ function Ref(refName) {
     });
 }
 exports.Ref = Ref;
+function inject(vue) {
+    var refs = vue.$options.$$__refs;
+    if (refs) {
+        var keys = Object.keys(refs);
+        for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+            var key = keys_1[_i];
+            var componenet = vue.$refs[key];
+            if (componenet == null) {
+                componenet = vue.$refs[decamelize_1.default(key, '-')];
+            }
+            if (componenet) {
+                vue[refs[key]] = componenet;
+            }
+            else {
+                // console.warn("@Ref not found ref componet '"+key+"'");
+            }
+        }
+    }
+}
 exports.Plugin = {
     install: function (Vue, options) {
         Vue.mixin({
             mounted: function () {
-                var refs = this.$options.$$__refs;
-                if (refs) {
-                    var keys = Object.keys(refs);
-                    for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
-                        var key = keys_1[_i];
-                        var componenet = this.$refs[key];
-                        if (componenet == null) {
-                            componenet = this.$refs[decamelize_1.default(key, '-')];
-                        }
-                        if (componenet) {
-                            this[refs[key]] = componenet;
-                        }
-                        else {
-                            console.warn("@Ref not found ref componet '" + key + "'");
-                        }
-                    }
-                }
+                inject(this);
+            },
+            updated: function () {
+                inject(this);
             }
         });
     }
